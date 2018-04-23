@@ -1,0 +1,3 @@
+# Thoth: Naming Service
+
+This is Thoth's Nameing Service, you can use it to find things...
