@@ -1,10 +1,10 @@
 apiVersion: v1
 kind: Template
 labels:
-  template: thoth-naming-service-buildconfig
+  template: naming-service-buildconfig
   thoth: 0.1.0
 metadata:
-  name: thoth-naming-service-buildconfig
+  name: naming-service-buildconfig
   annotations:
     description: This is Thoth Naming Service BuildConfig, this template is meant to be used by Jenkins, but could also be used by humans...
     openshift.io/display-name: 'Thoth Core: User API BuildConfig'
