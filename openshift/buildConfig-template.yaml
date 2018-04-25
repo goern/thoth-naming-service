@@ -7,9 +7,9 @@ metadata:
   name: naming-service-buildconfig
   annotations:
     description: This is Thoth Naming Service BuildConfig, this template is meant to be used by Jenkins, but could also be used by humans...
-    openshift.io/display-name: 'Thoth Core: User API BuildConfig'
-    version: 0.2.0
-    tags: poc,thoth,thoth-naming-service,ai-stacks
+    openshift.io/display-name: "Thoth Core: Naming Service BuildConfig"
+    version: 0.1.0
+    tags: poc,thoth,naming-service,ai-stacks
     template.openshift.io/documentation-url: https://github.com/Thoth-Station/
     template.openshift.io/long-description: This is Thoth Naming Service BuildConfig, this template is meant to be used by Jenkins, but could also be used by humans...
     template.openshift.io/provider-display-name: Red Hat, Inc.

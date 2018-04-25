@@ -63,7 +63,7 @@ api.init_app(app)
 def api_readiness():
     return jsonify({
         'name': 'Thoth Naming Service',
-        'version': thoth_naming_service.__version__
+        'version': f'v{thoth_naming_service.__version__}+{thoth_naming_service.__git_commit_id__}'
     }), 200, {'ContentType': 'application/json'}
 
 
@@ -71,7 +71,7 @@ def api_readiness():
 def api_liveness():
     return jsonify({
         'name': 'Thoth Build Analysers',
-        'version': thoth_naming_service.__version__
+        'version': f'v{thoth_naming_service.__version__}+{thoth_naming_service.__git_commit_id__}'
     }), 200, {'ContentType': 'application/json'}
 
 
@@ -81,4 +81,5 @@ def print_api_schema():
 
 
 if __name__ == "__main__":
+    logger.info(f'Thoth Naming Service v{thoth_naming_service.__version__}+{thoth_naming_service.__git_commit_id__}')
     app.run(host='0.0.0.0', port=8080, debug=DEBUG)
