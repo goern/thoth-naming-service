@@ -43,8 +43,6 @@ objects:
             value: '1'
           - name: UPGRADE_PIP_TO_LATEST
             value: ''
-          - name: WEB_CONCURRENCY
-            value: '4'
     triggers:
     - type: ImageChange
       imageChange: {}

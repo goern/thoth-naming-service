@@ -51,35 +51,35 @@ else:
     logger.setLevel(level=logging.INFO)
 
 
-app = Flask(__name__)
-app.config.SWAGGER_UI_JSONEDITOR = True
-app.config.SWAGGER_UI_DOC_EXPANSION = 'list'
-app.logger.setLevel(logging.DEBUG)
+application = Flask(__name__)
+application.config.SWAGGER_UI_JSONEDITOR = True
+application.config.SWAGGER_UI_DOC_EXPANSION = 'list'
+application.logger.setLevel(logging.DEBUG)
 
-api.init_app(app)
+api.init_app(application)
 
 
-@app.route('/readiness')
+@application.route('/readiness')
 def api_readiness():
     return jsonify({
-        'name': 'Thoth Naming Service',
+        'name': thoth_naming_service.__description__,
         'version': f'v{thoth_naming_service.__version__}+{thoth_naming_service.__git_commit_id__}'
     }), 200, {'ContentType': 'application/json'}
 
 
-@app.route('/liveness')
+@application.route('/liveness')
 def api_liveness():
     return jsonify({
-        'name': 'Thoth Build Analysers',
+        'name': thoth_naming_service.__description__,
         'version': f'v{thoth_naming_service.__version__}+{thoth_naming_service.__git_commit_id__}'
     }), 200, {'ContentType': 'application/json'}
 
 
-@app.route('/schema')
+@application.route('/schema')
 def print_api_schema():
     return jsonify(api.__schema__)
 
 
 if __name__ == "__main__":
     logger.info(f'Thoth Naming Service v{thoth_naming_service.__version__}+{thoth_naming_service.__git_commit_id__}')
-    app.run(host='0.0.0.0', port=8080, debug=DEBUG)
+    application.run(host='0.0.0.0', port=8080, debug=DEBUG)

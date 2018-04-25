@@ -65,6 +65,9 @@ objects:
           ports:
             - containerPort: 8080
               protocol: TCP
+          env:
+          - name: WEB_CONCURRENCY
+            value: '4'
           resources:
             requests:
               memory: "128Mi"
