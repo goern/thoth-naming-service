@@ -1,6 +1,6 @@
 import os
 
 
-__version__ = '0.1.0-dev'
+__version__ = '0.2.0'
 __description__ = 'Thoth: Naming Service, ask me if you want to find things...'
 __git_commit_id__ = os.getenv('OPENSHIFT_BUILD_COMMIT', '')
