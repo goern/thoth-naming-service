@@ -22,8 +22,10 @@ from flask_restplus import Api
 
 import thoth_naming_service
 from .analysers import ns as analysers_v1
+from .solvers import ns as solvers_v1
 
 api = Api(version=thoth_naming_service.__version__, title='Thoth: Naming Service',
           description=thoth_naming_service.__description__, doc='/openapi/')
 
-api.add_namespace(analysers_v1, path='/api/v1/analyzers')
+api.add_namespace(analysers_v1, path='/api/v0alpha0/analyzers')
+api.add_namespace(solvers_v1, path='/api/v0alpha0/solvers')

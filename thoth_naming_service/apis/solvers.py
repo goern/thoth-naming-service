@@ -22,10 +22,7 @@ from werkzeug.exceptions import BadRequest, ServiceUnavailable  # pragma: no cov
 from flask import request  # pragma: no cover
 from flask_restplus import Namespace, Resource, fields, reqparse  # pragma: no cover
 
-ns = Namespace('analysers', description='Thoth: Naming Service')  # pragma: no cover
-
-parser = reqparse.RequestParser()
-parser.add_argument('tag', type=str, help='Used for filtering the Analyser Images')
+ns = Namespace('solvers', description='Thoth: Naming Service')  # pragma: no cover
 
 
 # FIXME hardcored database of analyser images! ;)
@@ -35,45 +32,32 @@ DATABASE = {
     'items': [
         {
             'apiVersion': 'v0alpha0',
-            'kind': 'Analyser',
+            'kind': 'Solver',
             'metadata': {
-                'name': 'fridex/thoth-package-extract',
-                'description': 'This analyser will extract RPM and Python Packages. DEPRECATED: use "thoth/package-extract"'
+                'name': 'solver-26-job',
+                'description': 'This Solver is based on Fedora 26'
             },
-            'dockerImageRepository': 'docker://docker.io/fridex/thoth-package-extract:latest'
+            'dockerImageRepository': 'docker-registry.default.svc:5000/thoth-test-core/solver-f26-job',
         },
         {
             'apiVersion': 'v0alpha0',
-            'kind': 'Analyser',
+            'kind': 'Solver',
             'metadata': {
-                'name': 'thoth/package-extract',
-                'description': 'This analyser will extract RPM and Python Packages.'
+                'name': 'solver-27-job',
+                'description': 'This Solver is based on Fedora 27'
             },
-            'dockerImageRepository': 'docker-registry.default.svc:5000/thoth-test-core/package-extract',
-            'tag': 'default'
-        }
+            'dockerImageRepository': 'docker-registry.default.svc:5000/thoth-test-core/solver-f27-job',
+        },
     ]
 }
 
 
 @ns.route('/')
-@ns.expect(parser)
 @ns.response(200, '')
-@ns.response(404, 'Analyser Image Not Found')
-class AnalyserList(Resource):
-    """Lists of all currently known Analysers"""
-    @ns.doc('list_analysers')
+class SolverList(Resource):
+    """Lists of all currently known Solvers"""
+    @ns.doc('list_solvers')
     def get(self):
-        """List all Analysers"""
-
-        args = parser.parse_args()
-
-        if args['tag'] is not None:
-            for item in DATABASE['items']:
-                if 'tag' in item.keys():
-                    if item['tag'] == args['tag']:
-                        return item
-                    else:
-                        return None, 404
+        """List all Solvers"""
 
         return DATABASE
