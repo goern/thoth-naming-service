@@ -26,13 +26,14 @@ import daiquiri
 
 import openshift.client
 from kubernetes.client.rest import ApiException
-from pprint import pprint
+
+from thoth_naming_service.utils import get_api_token
 
 
 DEBUG = bool(os.getenv('DEBUG', False))
 KUBERNETES_API_URL = os.getenv(
     'KUBERNETES_API_URL', 'https://kubernetes.default.svc.cluster.local')
-KUBERNETES_API_TOKEN = os.getenv('KUBERNETES_API_TOKEN') or _get_api_token()
+KUBERNETES_API_TOKEN = os.getenv('KUBERNETES_API_TOKEN') or get_api_token()
 KUBERNETES_VERIFY_TLS = bool(int(os.getenv('KUBERNETES_VERIFY_TLS', "0")))  # FIXME reset to 1
 
 
@@ -45,7 +46,7 @@ else:
     logger.setLevel(level=logging.INFO)
 
 
-def get_image_list() -> []:
+def get_solver_image_list() -> []:
     """get_image_list() will query the OpenShift ImageStream API to find ImageStream belonging/labeled 'solver'"""
 
     configuration = openshift.client.Configuration()
@@ -70,7 +71,3 @@ def get_image_list() -> []:
         print("Exception when calling ImageOpenshiftIoV1Api->list_namespaced_image_stream: %s\n" % e)
 
     return solver_images
-
-
-if __name__ == '__main__':
-    pprint(get_image_list())

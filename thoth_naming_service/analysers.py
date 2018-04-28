@@ -23,26 +23,17 @@ import os
 
 import openshift.client
 from kubernetes.client.rest import ApiException
-from pprint import pprint
+
+from thoth_naming_service.utils import get_api_token
 
 
 KUBERNETES_API_URL = os.getenv(
     'KUBERNETES_API_URL', 'https://kubernetes.default.svc.cluster.local')
-KUBERNETES_API_TOKEN = os.getenv('KUBERNETES_API_TOKEN') or _get_api_token()
+KUBERNETES_API_TOKEN = os.getenv('KUBERNETES_API_TOKEN') or get_api_token()
 KUBERNETES_VERIFY_TLS = bool(int(os.getenv('KUBERNETES_VERIFY_TLS', "0")))  # FIXME reset to 1
 
 
-def _get_api_token():
-    """Get token to Kubernetes master."""
-    try:
-        with open('/var/run/secrets/kubernetes.io/serviceaccount/token', 'r') as token_file:
-            return token_file.read()
-    except FileNotFoundError as exc:
-        raise FileNotFoundError("Unable to get service account token, please check that service has "
-                                "service account assigned with exposed token") from exc
-
-
-def analysers():
+def get_analyser_image_list():
     configuration = openshift.client.Configuration()
     configuration.api_key_prefix['authorization'] = 'Bearer'
     configuration.api_key['authorization'] = KUBERNETES_API_TOKEN
@@ -52,7 +43,3 @@ def analysers():
     api_instance = openshift.client.ImageOpenshiftIoV1Api(openshift.client.ApiClient(configuration))
 
     return []  # TODO
-
-
-if __name__ == '__main__':
-    analysers()

@@ -30,7 +30,7 @@ from werkzeug.exceptions import BadRequest, ServiceUnavailable  # pragma: no cov
 from flask import request  # pragma: no cover
 from flask_restplus import Namespace, Resource, fields, reqparse  # pragma: no cover
 
-from thoth_naming_service import solvers
+from thoth_naming_service import get_solver_image_list
 
 
 DEBUG = bool(os.getenv('DEBUG', False))
@@ -86,7 +86,7 @@ class SolverList(Resource):
         solver_images = []
 
         try:
-            for image in solvers.get_image_list():
+            for image in get_solver_image_list():
                 name = next(iter(image))
 
                 solver_images.append({
