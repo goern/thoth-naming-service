@@ -45,16 +45,6 @@ else:
     logger.setLevel(level=logging.INFO)
 
 
-def _get_api_token():
-    """Get token to Kubernetes master."""
-    try:
-        with open('/var/run/secrets/kubernetes.io/serviceaccount/token', 'r') as token_file:
-            return token_file.read()
-    except FileNotFoundError as exc:
-        raise FileNotFoundError("Unable to get service account token, please check that service has "
-                                "service account assigned with exposed token") from exc
-
-
 def get_image_list() -> []:
     """get_image_list() will query the OpenShift ImageStream API to find ImageStream belonging/labeled 'solver'"""
 
