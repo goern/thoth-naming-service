@@ -42,7 +42,7 @@ def _get_api_token():
                                 "service account assigned with exposed token") from exc
 
 
-def analysers():
+def solvers() -> []:
     configuration = openshift.client.Configuration()
     configuration.api_key_prefix['authorization'] = 'Bearer'
     configuration.api_key['authorization'] = KUBERNETES_API_TOKEN
@@ -51,12 +51,22 @@ def analysers():
 
     api_instance = openshift.client.ImageOpenshiftIoV1Api(openshift.client.ApiClient(configuration))
 
+    solver_images = []
+
     try:
-        api_response = api_instance.list_namespaced_image_stream('thoth-test-core', label_selector='component=analyser')
-        pprint(api_response)
+        api_response = api_instance.list_namespaced_image_stream('thoth-test-core', label_selector='component=solver')
+
+        for imagestream in api_response.items:
+            solver_images.append({
+                'name': imagestream.metadata.name,
+                'dockerImageRepository': imagestream.status.docker_image_repository
+            })
+
     except ApiException as e:
         print("Exception when calling ImageOpenshiftIoV1Api->list_namespaced_image_stream: %s\n" % e)
 
+    return solver_images
+
 
 if __name__ == '__main__':
-    analysers()
+    pprint(solvers())
