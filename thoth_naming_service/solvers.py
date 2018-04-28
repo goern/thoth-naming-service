@@ -74,15 +74,7 @@ def get_image_list() -> []:
         api_response = api_instance.list_namespaced_image_stream('thoth-test-core', label_selector='component=solver')
 
         for imagestream in api_response.items:
-            solver_images.append({
-                'apiVersion': 'v0alpha0',
-                'kind': 'SolverImage',
-                'metadata': {
-                    'name': imagestream.metadata.name,
-                    'description': 'NotImplemented'
-                },
-                'dockerImageRepository': imagestream.status.docker_image_repository,
-            })
+            solver_images.append({imagestream.metadata.name: imagestream.status.docker_image_repository})
 
     except ApiException as e:
         print("Exception when calling ImageOpenshiftIoV1Api->list_namespaced_image_stream: %s\n" % e)

@@ -22,6 +22,8 @@
 import os
 import logging
 
+import urllib3
+
 import daiquiri
 
 from werkzeug.exceptions import BadRequest, ServiceUnavailable  # pragma: no cover
@@ -81,4 +83,28 @@ class SolverList(Resource):
     def get(self):
         """List all Solvers"""
 
-        return solvers.get_image_list()
+        solver_images = []
+
+        try:
+            for image in solvers.get_image_list():
+                name = next(iter(image))
+
+                solver_images.append({
+                    'apiVersion': 'v0alpha0',
+                    'kind': 'SolverImage',
+                    'metadata': {
+                        'name': name,
+                        'description': 'NotImplemented'
+                    },
+                    'dockerImageRepository': image[name],
+                })
+
+        except urllib3.exceptions.MaxRetryError as e:
+            logger.error(e)
+            return None, 504
+
+        return {
+            'apiVersion': 'v1',
+            'kind': 'List',
+            'items': solver_images
+        }
