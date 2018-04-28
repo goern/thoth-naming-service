@@ -51,11 +51,7 @@ def analysers():
 
     api_instance = openshift.client.ImageOpenshiftIoV1Api(openshift.client.ApiClient(configuration))
 
-    try:
-        api_response = api_instance.list_namespaced_image_stream('thoth-test-core', label_selector='component=analyser')
-        pprint(api_response)
-    except ApiException as e:
-        print("Exception when calling ImageOpenshiftIoV1Api->list_namespaced_image_stream: %s\n" % e)
+    return []  # TODO
 
 
 if __name__ == '__main__':

@@ -18,9 +18,30 @@
 
 """Thoth: Naming Service, ask me if you want to find things..."""
 
+
+import os
+import logging
+
+import daiquiri
+
 from werkzeug.exceptions import BadRequest, ServiceUnavailable  # pragma: no cover
 from flask import request  # pragma: no cover
 from flask_restplus import Namespace, Resource, fields, reqparse  # pragma: no cover
+
+from thoth_naming_service import solvers
+
+
+DEBUG = bool(os.getenv('DEBUG', False))
+
+
+daiquiri.setup(level=logging.INFO)
+logger = daiquiri.getLogger('api')
+
+if DEBUG:
+    logger.setLevel(level=logging.DEBUG)
+else:
+    logger.setLevel(level=logging.INFO)
+
 
 ns = Namespace('solvers', description='Thoth: Naming Service')  # pragma: no cover
 
@@ -32,7 +53,7 @@ DATABASE = {
     'items': [
         {
             'apiVersion': 'v0alpha0',
-            'kind': 'Solver',
+            'kind': 'SolverImage',
             'metadata': {
                 'name': 'solver-26-job',
                 'description': 'This Solver is based on Fedora 26'
@@ -41,7 +62,7 @@ DATABASE = {
         },
         {
             'apiVersion': 'v0alpha0',
-            'kind': 'Solver',
+            'kind': 'SolverImage',
             'metadata': {
                 'name': 'solver-27-job',
                 'description': 'This Solver is based on Fedora 27'
@@ -60,4 +81,4 @@ class SolverList(Resource):
     def get(self):
         """List all Solvers"""
 
-        return DATABASE
+        return solvers.get_image_list()

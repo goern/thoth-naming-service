@@ -20,16 +20,29 @@
 
 
 import os
+import logging
+
+import daiquiri
 
 import openshift.client
 from kubernetes.client.rest import ApiException
 from pprint import pprint
 
 
+DEBUG = bool(os.getenv('DEBUG', False))
 KUBERNETES_API_URL = os.getenv(
     'KUBERNETES_API_URL', 'https://kubernetes.default.svc.cluster.local')
 KUBERNETES_API_TOKEN = os.getenv('KUBERNETES_API_TOKEN') or _get_api_token()
 KUBERNETES_VERIFY_TLS = bool(int(os.getenv('KUBERNETES_VERIFY_TLS', "0")))  # FIXME reset to 1
+
+
+daiquiri.setup(level=logging.INFO)
+logger = daiquiri.getLogger('naming_service')
+
+if DEBUG:
+    logger.setLevel(level=logging.DEBUG)
+else:
+    logger.setLevel(level=logging.INFO)
 
 
 def _get_api_token():
@@ -42,12 +55,16 @@ def _get_api_token():
                                 "service account assigned with exposed token") from exc
 
 
-def solvers() -> []:
+def get_image_list() -> []:
+    """get_image_list() will query the OpenShift ImageStream API to find ImageStream belonging/labeled 'solver'"""
+
     configuration = openshift.client.Configuration()
     configuration.api_key_prefix['authorization'] = 'Bearer'
     configuration.api_key['authorization'] = KUBERNETES_API_TOKEN
     configuration.host = KUBERNETES_API_URL
     configuration.verify_ssl = KUBERNETES_VERIFY_TLS
+
+    logger.debug(f'querying ImageOpenshiftIoV1 API at {KUBERNETES_API_URL}')
 
     api_instance = openshift.client.ImageOpenshiftIoV1Api(openshift.client.ApiClient(configuration))
 
@@ -58,8 +75,13 @@ def solvers() -> []:
 
         for imagestream in api_response.items:
             solver_images.append({
-                'name': imagestream.metadata.name,
-                'dockerImageRepository': imagestream.status.docker_image_repository
+                'apiVersion': 'v0alpha0',
+                'kind': 'SolverImage',
+                'metadata': {
+                    'name': imagestream.metadata.name,
+                    'description': 'NotImplemented'
+                },
+                'dockerImageRepository': imagestream.status.docker_image_repository,
             })
 
     except ApiException as e:
@@ -69,4 +91,4 @@ def solvers() -> []:
 
 
 if __name__ == '__main__':
-    pprint(solvers())
+    pprint(get_image_list())
