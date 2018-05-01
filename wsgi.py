@@ -24,23 +24,24 @@ import logging
 
 import daiquiri
 
-from flask import Flask
-from flask import jsonify
-from flask import request
+from flask import Flask, Response, jsonify, request
 from flask.helpers import make_response
 
 import requests
 
 from prometheus_client import CONTENT_TYPE_LATEST
-from prometheus_client import Counter
-from prometheus_client import Histogram
-from prometheus_client import core
-from prometheus_client import generate_latest
+from prometheus_client import Counter, Histogram
+from prometheus_client import core, generate_latest
 
 import thoth_naming_service
 from thoth_naming_service.apis import api
 
 DEBUG = bool(os.getenv('DEBUG', False))
+
+FLASK_REQUEST_LATENCY = Histogram('flask_request_latency_seconds', 'Flask Request Latency',
+                                ['method', 'endpoint'])
+FLASK_REQUEST_COUNT = Counter('flask_request_count', 'Flask Request Count',
+                              ['method', 'endpoint', 'http_status'])
 
 daiquiri.setup(level=logging.INFO)
 logger = daiquiri.getLogger('nameing-service')
@@ -51,12 +52,27 @@ else:
     logger.setLevel(level=logging.INFO)
 
 
+def before_request():
+    request.start_time = time.time()
+
+
+def after_request(response):
+    request_latency = time.time() - request.start_time
+    FLASK_REQUEST_LATENCY.labels(request.method, request.path).observe(request_latency)
+    FLASK_REQUEST_COUNT.labels(request.method, request.path, response.status_code).inc()
+
+    return response
+
+
 application = Flask(__name__)
 application.config.SWAGGER_UI_JSONEDITOR = True
 application.config.SWAGGER_UI_DOC_EXPANSION = 'list'
 application.logger.setLevel(logging.DEBUG)
 
 api.init_app(application)
+
+application.before_request(before_request)
+application.after_request(after_request)
 
 
 @application.route('/readiness')
@@ -78,6 +94,11 @@ def api_liveness():
 @application.route('/schema')
 def print_api_schema():
     return jsonify(api.__schema__)
+
+
+@application.route('/metrics')
+def metrics():
+    return Response(generate_latest(), mimetype=CONTENT_TYPE_LATEST)
 
 
 if __name__ == "__main__":
