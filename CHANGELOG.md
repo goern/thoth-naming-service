@@ -1,5 +1,11 @@
 # Changelog for the Thoth Naming Service
 
+## [0.5.0] - 2018-Jun-12 - goern
+
+### Added
+
+Set resource limits of BuildConfig and Deployment to reasonable values, this will prevent unpredicted behavior on UpShift.
+
 ## [0.4.0] - 2018-05-01 - goern
 
 ### Added
